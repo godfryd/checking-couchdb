@@ -35,7 +35,7 @@ def test_build(db, build_name, scenarios):
         # store test log
         log = "asdfas"*100000
         db.put_attachment(j, log, "log.txt")
-    
+
 if __name__ == "__main__":
     server = couchdb.Server('http://localhost:5984/')
     dbname = 'tests-'+str(datetime.datetime.now())
@@ -46,3 +46,5 @@ if __name__ == "__main__":
 
     for i in range(10):
         test_build(db, "build_%d" % i, scenarios)
+
+    query_build(db)
