@@ -2,6 +2,7 @@ import sys
 import couchdb
 
 def query_tools(db):
+    """list of tools and their scenarios"""
     mapf = """
     function(doc) {
       if (doc.type == 'tool') {
@@ -19,6 +20,7 @@ def query_tools(db):
     return tools
 
 def query_builds(db):
+    """list of builds"""
     mapf = """
     function(doc) {
       if (doc.type == 'build') {
@@ -34,6 +36,7 @@ def query_builds(db):
     return builds
 
 def query_build(db, build_id):
+    """detailed test results for particular build"""
     mapf = """
     function(doc) {
       if (doc.type == 'build') {
@@ -48,6 +51,7 @@ def query_build(db, build_id):
         print "\t", r.value
 
 def query_passrate(db):
+    """list of pass-rate for all or a range of builds for all their test jobs"""
     mapf = """
     function(doc) {
       if (doc.type == 'job') {
