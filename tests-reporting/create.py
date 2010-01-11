@@ -63,7 +63,7 @@ def create_design_doc(db):
       }
     }
     """
-
+  
     for name, mapf in maps.iteritems():
         v = couchdb.design.ViewDefinition("reporting", name, mapf)
         v.sync(db)

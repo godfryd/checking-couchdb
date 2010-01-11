@@ -124,6 +124,44 @@ function load2Builds(build1Id, build2Id, scenariosMap, comparisonStore) {
     });
 }
 
+function loadBuildsRange(buildsIds, scenariosMap, trendsStore) {
+    Ext.Ajax.request({
+        method: "POST",
+        url: "/tests-reporting/_design/reporting/_view/results",
+        jsonData: {keys: buildsIds},
+        success: function(response, options){
+            var t = Ext.decode(response.responseText);
+            var results = [];
+            var testcases = {};
+            Ext.each(t.rows, function(r) {
+                var s = scenariosMap[r.value.scenario];
+                for (var tc in r.value.results) {
+                    var k = s[0] + s[1] + tc;
+                    if (testcases[k] === undefined) {
+                        testcases[k] = {tool: s[0], scen: s[1], tc: tc, builds: {}};
+                    }
+                    testcases[k].builds[r.value.build] = r.value.results[tc];
+                }
+            });
+            for (var k in testcases) {
+                var tc = testcases[k];
+                var num = 0;
+                var mean = 0;
+                for (var b in tc.builds) {
+                    mean += tc.builds[b];
+                    num += 1;
+                }
+                mean = mean / num;
+                results.push([tc.tool, tc.scen, tc.tc, mean]);
+            }
+            trendsStore.loadData(results);
+        },
+        failure: function(response, options){
+            console.info("not ok");
+        }
+    });
+}
+
 Ext.onReady(function(){
     Ext.QuickTips.init();
 
@@ -372,6 +410,98 @@ Ext.onReady(function(){
         }, comparisonGrid]
     });
 
+    ////////////////////////////////
+    //  Builds trends
+    var trendsStore = new Ext.ux.data.PagingArrayStore({
+        fields: ['tool', 'scenario', 'testcase', 'mean'],
+        lastOptions: {params: {start: 0, limit: 20}}
+    });
+
+    var trendsColModel = new Ext.grid.ColumnModel([{
+        header: "Tool",
+        sortable: true,
+        dataIndex: 'tool'
+    },{
+        header: "Scenario",
+        sortable: true,
+        dataIndex: 'scenario'
+    },{
+        header: "Test case",
+        sortable: true,
+        dataIndex: 'testcase'
+    },{
+        header: "Mean",
+        sortable: true,
+        dataIndex: 'mean'
+    }]);
+
+    var trendsGrid = new Ext.grid.GridPanel({
+        border: false,
+        flex: 1,
+        store: trendsStore,
+        cm: trendsColModel,
+        tbar: [{
+            text: "Reload",
+            handler: function() {
+                var build1Id = Ext.getCmp('build1-cmb').getValue();                
+                var build2Id = Ext.getCmp('build2-cmb').getValue();
+                var buildsIds = [];
+                var inRange = false;
+                for (var i = 0; i < buildsStore.getCount(); i++) {
+                    var b = buildsStore.getAt(i);
+                    if (b.get("build_id") == build1Id) {
+                        inRange = true;
+                    }
+                    if (inRange) {
+                        var bId = b.get("build_id");
+                        buildsIds.push(bId);
+                    }
+                    if (b.get("build_id") == build2Id) {
+                        inRange = false;
+                    }
+                }
+                loadBuildsRange(buildsIds, scenariosMap, trendsStore);
+            }
+        }],
+        bbar: new Ext.PagingToolbar({
+            pageSize: 20,
+            store: trendsStore,
+            displayInfo: true,
+            displayMsg: 'Displaying results {0} - {1} of {2}',
+            emptyMsg: "No results to display"
+        })
+    });
+
+    var trendsPanel = new Ext.Panel({
+        title: '6. Results trends',
+        border: false,
+        layout: 'vbox',
+        items: [{
+            border: false,
+            xtype: 'form',
+            padding: "4px 0 0 10px",
+            items: [{
+                id: 'build1-cmb',
+                xtype: 'combo',
+                fieldLabel: 'First build',
+                mode: 'local',
+                triggerAction: 'all',
+                store: buildsStore,
+                valueField: 'build_id',
+                displayField: 'build'
+            },{
+                id: 'build2-cmb',
+                xtype: 'combo',
+                fieldLabel: 'Last build',
+                mode: 'local',
+                triggerAction: 'all',
+                store: buildsStore,
+                valueField: 'build_id',
+                displayField: 'build'
+            }]
+        }, trendsGrid]
+    });
+
     ///////////////////////////////////////////////
     // load initially stores
     loadScenarios(scenariosStore, scenariosMap);
@@ -381,10 +511,7 @@ Ext.onReady(function(){
     // main tab panel
     var tabs = new Ext.TabPanel({
         activeTab: 0,
-        items: [scenariosPanel, buildsPanel, buildResPanel, passRatePanel, comparisonPanel, {
-            title: '6. Results trends',
-            html: 'Another one'
-        }]
+        items: [scenariosPanel, buildsPanel, buildResPanel, passRatePanel, comparisonPanel, trendsPanel]
     });
     
     var viewport = new Ext.Viewport({
