@@ -443,8 +443,8 @@ Ext.onReady(function(){
         tbar: [{
             text: "Reload",
             handler: function() {
-                var build1Id = Ext.getCmp('build1-cmb').getValue();                
-                var build2Id = Ext.getCmp('build2-cmb').getValue();
+                var build1Id = Ext.getCmp('builda-cmb').getValue();                
+                var build2Id = Ext.getCmp('buildb-cmb').getValue();
                 var buildsIds = [];
                 var inRange = false;
                 for (var i = 0; i < buildsStore.getCount(); i++) {
@@ -481,7 +481,7 @@ Ext.onReady(function(){
             xtype: 'form',
             padding: "4px 0 0 10px",
             items: [{
-                id: 'build1-cmb',
+                id: 'builda-cmb',
                 xtype: 'combo',
                 fieldLabel: 'First build',
                 mode: 'local',
@@ -490,7 +490,7 @@ Ext.onReady(function(){
                 valueField: 'build_id',
                 displayField: 'build'
             },{
-                id: 'build2-cmb',
+                id: 'buildb-cmb',
                 xtype: 'combo',
                 fieldLabel: 'Last build',
                 mode: 'local',
