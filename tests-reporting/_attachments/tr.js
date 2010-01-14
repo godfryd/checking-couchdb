@@ -5,7 +5,7 @@ Ext.BLANK_IMAGE_URL = 'resources/images/default/s.gif';
 
 function loadScenarios(scenariosStore, scenariosMap) {
     Ext.Ajax.request({
-        url: "/tests-reporting/_design/reporting/_view/tools",
+        url: "/tests-results/_design/reporting/_view/tools",
         success: function(response, options){
             var t = Ext.decode(response.responseText);
             var scenarios = [];
@@ -32,7 +32,7 @@ function loadScenarios(scenariosStore, scenariosMap) {
 
 function loadBuilds(buildsStore, buildMap) {
     Ext.Ajax.request({
-        url: "/tests-reporting/_design/reporting/_view/builds",
+        url: "/tests-results/_design/reporting/_view/builds",
         success: function(response, options){
             var t = Ext.decode(response.responseText);
             var builds = [];
@@ -50,7 +50,7 @@ function loadBuilds(buildsStore, buildMap) {
 
 function loadBuildResults(buildId, scenariosMap, buildResStore) {
     Ext.Ajax.request({
-        url: "/tests-reporting/_design/reporting/_view/results?key=\""+buildId+"\"",
+        url: "/tests-results/_design/reporting/_view/results?key=\""+buildId+"\"",
         success: function(response, options){
             var t = Ext.decode(response.responseText);
             var results = [];
@@ -70,7 +70,7 @@ function loadBuildResults(buildId, scenariosMap, buildResStore) {
 
 function loadPassRate(passRateStore, scenariosMap, buildMap) {
     Ext.Ajax.request({
-        url: "/tests-reporting/_design/reporting/_view/passrate",
+        url: "/tests-results/_design/reporting/_view/passrate",
         success: function(response, options){
             var t = Ext.decode(response.responseText);
             var passrate = [];
@@ -89,7 +89,7 @@ function loadPassRate(passRateStore, scenariosMap, buildMap) {
 function load2Builds(build1Id, build2Id, scenariosMap, comparisonStore) {
     Ext.Ajax.request({
         method: "POST",
-        url: "/tests-reporting/_design/reporting/_view/results",
+        url: "/tests-results/_design/reporting/_view/results",
         jsonData: {keys: [build1Id, build2Id]},
         success: function(response, options){
             var t = Ext.decode(response.responseText);
@@ -127,7 +127,7 @@ function load2Builds(build1Id, build2Id, scenariosMap, comparisonStore) {
 function loadBuildsRange(buildsIds, scenariosMap, trendsStore) {
     Ext.Ajax.request({
         method: "POST",
-        url: "/tests-reporting/_design/reporting/_view/results",
+        url: "/tests-results/_design/reporting/_view/results",
         jsonData: {keys: buildsIds},
         success: function(response, options){
             var t = Ext.decode(response.responseText);
