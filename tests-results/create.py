@@ -90,7 +90,7 @@ def test_build(db, build_name, scenarios):
 
 if __name__ == "__main__":
     server = couchdb.Server('http://localhost:5984/')
-    dbname = 'tests-reporting'
+    dbname = 'tests-results'
     print "creating database %s" % dbname
     if dbname in server:
         server.delete(dbname)

@@ -1,8 +1,8 @@
 upload:
-	cd tr && couchapp push http://localhost:5984/tr
+	cd tests-reporting && couchapp push http://localhost:5984/tests-reporting
 
 create:
-	python tests-reporting/create.py
+	python tests-results/create.py
 
 queries:
-	python ../tests-reporting/queries.py tests-reporting
+	python tests-results/queries.py tests-results
